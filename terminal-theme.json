@@ -1,0 +1,24 @@
+{
+//shades of purple
+"terminal.ansiBlack": "#000000",
+"terminal.ansiRed": "#EC3A37",
+"terminal.ansiGreen": "#3AD900",
+"terminal.ansiYellow": "#FAD000",
+"terminal.ansiBlue": "#6943BF",
+"terminal.ansiMagenta": "#FF2C70",
+"terminal.ansiCyan": "#00C5C7",
+"terminal.ansiWhite": "#C0C0C0",
+"terminal.ansiBrightBlack": "#4D4D4D",
+"terminal.ansiBrightRed": "#FF628C",
+"terminal.ansiBrightGreen": "#B3FF00",
+"terminal.ansiBrightYellow": "#FFEE80",
+"terminal.ansiBrightBlue": "#FF9D00",
+"terminal.ansiBrightMagenta": "#FB94FF",
+"terminal.ansiBrightCyan": "#9EFFFF",
+"terminal.ansiBrightWhite": "#FFFFFF",
+"terminal.background": "#2D2B55",
+"terminal.foreground": "#A599E9",
+"terminalCursor.background": "#2D2B55",
+"terminalCursor.foreground": "#FAD000",
+"terminal.selectionBackground": "#515151A1"
+}
