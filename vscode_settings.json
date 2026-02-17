@@ -1,0 +1,52 @@
+{
+    "terminal.integrated.profiles.linux": {
+        "bash": {
+            "path": "/usr/bin/bash"
+        },
+        "zsh": {
+            "path": "zsh"
+        },
+        "fish": {
+            "path": "fish"
+        },
+        "tmux": {
+            "path": "tmux",
+            "icon": "terminal-tmux"
+        },
+        "pwsh": {
+            "path": "pwsh",
+            "icon": "terminal-powershell"
+        }
+    },
+    "terminal.integrated.defaultProfile.linux": "bash",
+    //"editor.fontFamily": "'Fira Code', 'Droid Sans Mono', 'monospace', monospace",
+    "editor.fontFamily": "'JetBrains Mono', 'Droid Sans Mono', 'monospace', monospace",
+    "telemetry.telemetryLevel": "off",
+    "python.analysis.typeCheckingMode": "standard",
+    "security.workspace.trust.untrustedFiles": "open",
+    "java.jdt.ls.java.home": "/home/crostini/.jdks/openjdk-25.0.1",
+    "workbench.secondarySideBar.defaultVisibility": "hidden",
+    "workbench.colorTheme": "Tokyo Night Storm",
+    "workbench.iconTheme": "symbols",
+    "workbench.tree.indent": 16,
+    //"workbench.tree.renderIndentGuides": "none",
+    //"workbench.editor.showTabs": "single",
+    "breadcrumbs.enabled": false,
+    "symbols.hidesExplorerArrows": true,
+    "workbench.activityBar.location": "top",
+    "workbench.sideBar.location": "right",
+    "window.menuBarVisibility": "compact",
+    "chat.agentsControl.enabled": false,
+    "files.insertFinalNewline": true,
+    "editor.renderLineHighlight": "gutter",
+    "editor.tabCompletion": "on",
+    "editor.snippetSuggestions": "top",
+    "editor.mouseWheelZoom": true,//resise font size indepentandly of ui elements
+    "editor.lineHeight": 25,
+    "files.autoSave": "afterDelay",
+    "window.titleBarStyle": "custom",
+    "window.customTitleBarVisibility": "windowed",//enter full screen mode to take effect
+    //if want title bar to be always hidden ->  set style from "custom" to "native" and set visibility to "never"
+    "editor.cursorStyle": "block",
+    "workbench.statusBar.visible": false
+}

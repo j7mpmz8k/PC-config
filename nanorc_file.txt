@@ -1,0 +1,51 @@
+set mouse
+set linenumbers
+set constantshow
+set autoindent
+set tabsize 4
+set tabstospaces
+
+## --- THE "WORKING" BINDINGS ---
+
+# SEARCH: Ctrl+F
+unbind ^W main
+bind ^F whereis main
+
+bind M-r replace main
+
+bind M-, findprevious main
+bind M-. findnext main
+
+# PASTE: Ctrl+V
+unbind ^V main
+bind ^V paste main
+
+# CUT: Ctrl+X
+unbind ^X main
+bind ^X cut main
+
+# UNDO/REDO: Ctrl+Z and Ctrl+Y
+unbind ^Z main
+unbind ^Y main
+bind ^Z undo main
+bind ^Y redo main
+
+# SAVE: Ctrl+S
+unbind ^O main
+bind ^S writeout main
+
+# EXIT: Ctrl+Q
+unbind ^Q main
+bind ^Q exit main
+
+## --- SYNTAX HIGHLIGHTING ---
+include "/usr/share/nano/*.nanorc"
+
+# F1: Full Class + Main Signature
+bind F1 "public class Name " main
+
+# F2: Just the Main Method
+bind F2 "	public static void main(String[] args) " main
+
+# F3: Additional Methods
+bind F3 "       public static type name()" main
