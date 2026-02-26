@@ -65,3 +65,49 @@ alias code="flatpak run com.visualstudio.code"
 bind '"\e[1;3D": beginning-of-line'
 # Map Alt+Right to End of Line (same as Ctrl+E)
 bind '"\e[1;3C": end-of-line'
+
+supergrep() {
+    local include_hidden=false
+
+    # Check for the optional -v flag as the first argument
+    if [ "$1" = "-v" ]; then
+        include_hidden=true
+        shift # Remove the -v flag from the arguments
+    fi
+
+    # Check if the user provided at least a number and one word
+    if [ "$#" -lt 2 ]; then
+        echo "Usage: supergrep [-v] <lines> <word1> [word2 ...]"
+        echo ""
+        echo "Options:"
+        echo "  -v        : Search all files, including hidden ones (starting with a dot)."
+        echo ""
+        echo "Parameters:"
+        echo "  <lines>   : The number of context lines to show before and after the match (e.g., 5)."
+        echo "              Use 0 to only show the exact matching lines."
+        echo "  <words>   : One or more keywords that MUST all exist on the same line."
+        echo ""
+        echo "Examples:"
+        echo "  supergrep 5 tag util"
+        echo "  supergrep -v 0 error database connection"
+        return 1
+    fi
+
+    # Save the first argument as the number of context lines
+    local lines="$1"
+    shift # Remove the first argument, leaving only the words in $@
+
+    # Build the regex pattern dynamically
+    local pattern="^"
+    for word in "$@"; do
+        pattern="${pattern}(?=.*${word})"
+    done
+    pattern="${pattern}.*$"
+
+    # Run the grep command based on the include_hidden flag
+    if [ "$include_hidden" = true ]; then
+        grep -C "$lines" -r -P "$pattern" .
+    else
+        grep --exclude-dir=".[!.]*" --exclude-dir="..?*" --exclude=".[!.]*" --exclude="..?*" -C "$lines" -r -P "$pattern" .
+    fi
+}
