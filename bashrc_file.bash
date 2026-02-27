@@ -90,7 +90,7 @@ supergrep() {
 
     # Check if the user provided at least a number and one word
     if [ "$#" -lt 2 ]; then
-        echo "Usage: supergrep [-a] [-c] <lines> <word1> [-exclude_word2] ..."
+        echo "Usage: supergrep [-a] [-c] <lines> <word1> [-exclude_word2] [+ word3] ..."
         echo ""
         echo "Options:"
         echo "  -a, --all         : Search all files, including hidden ones."
@@ -98,39 +98,59 @@ supergrep() {
         echo ""
         echo "Parameters:"
         echo "  <lines>           : Context lines to show (e.g., 5 or 0)."
-        echo "  <words>           : Words to include. Prefix a word with '-' to EXCLUDE it."
+        echo "  <words>           : Words to include."
+        echo "  -                 : Prefix a word with '-' to EXCLUDE it (NOT)."
+        echo "  +                 : Use '+' to create an OR group."
         echo ""
         echo "Examples:"
-        echo "  supergrep 2 error database       # Find 'error' AND 'database' (case-insensitive)"
+        echo "  supergrep 2 error database       # Find 'error' AND 'database'"
         echo "  supergrep 0 error -database      # Find 'error' BUT NOT 'database'"
-        echo "  supergrep -c 0 Error             # Exact case match for 'Error'"
+        echo "  supergrep 0 cherry + fig         # Find 'cherry' OR 'fig'"
+        echo "  supergrep 0 error + warn alert   # Find 'error' OR ('warn' AND 'alert')"
         return 1
     fi
 
     local lines="$1"
     shift 
 
-    # 2. Build the regex pattern
-    local pattern="^${case_insensitive}"
-    
-    # 3. Process the remaining words (Search Engine Style)
+    # 2. Build the Regex Pattern Dynamically
+    local groups=()
+    local current_group=""
+
     for term in "$@"; do
-        if [[ "$term" == -* ]]; then
-            # If the term starts with a hyphen, it's an EXCLUSION
-            local ex_word="${term:1}" # Strip the hyphen
-            pattern="${pattern}(?!.*${ex_word})"
+        if [[ "$term" == "+" || "$term" == "OR" ]]; then
+            # Close the current AND group
+            groups+=("${current_group}.*")
+            current_group=""
+        elif [[ "$term" == -* ]]; then
+            # If the term starts with a hyphen, it's an EXCLUSION (NOT)
+            local ex_word="${term:1}"
+            current_group="${current_group}(?!.*${ex_word})"
         else
-            # Otherwise, it's an INCLUSION
-            pattern="${pattern}(?=.*${term})"
+            # Otherwise, it's an INCLUSION (AND)
+            current_group="${current_group}(?=.*${term})"
         fi
     done
     
-    pattern="${pattern}.*$"
+    # Add the final group after the loop finishes
+    groups+=("${current_group}.*")
 
-    # 4. Run the search
+    # Join all the groups together with the Regex OR operator (|)
+    local joined_groups=""
+    for i in "${!groups[@]}"; do
+        if [ "$i" -gt 0 ]; then
+            joined_groups+="|"
+        fi
+        joined_groups+="${groups[$i]}"
+    done
+    
+    # Wrap it all in a non-capturing group anchored to the start of the line
+    local pattern="^${case_insensitive}(?:${joined_groups})$"
+
+    # 3. Run the search
     if [ "$include_hidden" = true ]; then
-        grep -C "$lines" -r -P "$pattern" .
+        grep -n -C "$lines" -r -P "$pattern" .
     else
-        grep --exclude-dir=".[!.]*" --exclude-dir="..?*" --exclude=".[!.]*" --exclude="..?*" -C "$lines" -r -P "$pattern" .
+        grep --exclude-dir=".[!.]*" --exclude-dir="..?*" --exclude=".[!.]*" --exclude="..?*" -n -C "$lines" -r -P "$pattern" .
     fi
 }
