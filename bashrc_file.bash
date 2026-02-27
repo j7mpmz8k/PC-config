@@ -69,6 +69,7 @@ bind '"\e[1;3C": end-of-line'
 supergrep() {
     local include_hidden=false
     local case_insensitive="(?i)" # Case-insensitive by default
+    local perl_flags="gi"
     local list_only=""
     local file_filter=""
     local has_ext_filter=false
@@ -82,6 +83,7 @@ supergrep() {
                 ;;
             -c|--case-sensitive) # Make the search case-sensitive
                 case_insensitive=""
+                perl_flags="g"
                 shift
                 ;;
             -l|--list) # List files only
@@ -133,6 +135,7 @@ supergrep() {
     # 2. Build the Regex Pattern Dynamically
     local groups=()
     local current_group=""
+    local highlight_words=""
 
     for term in "$@"; do
         if [[ "$term" == "+" || "$term" == "OR" ]]; then
@@ -146,6 +149,11 @@ supergrep() {
         else
             # Otherwise, it's an INCLUSION (AND)
             current_group="${current_group}(?=.*${term})"
+            # Build an OR-separated string of words to highlight later
+            if [ -n "$highlight_words" ]; then
+                highlight_words="$highlight_words|"
+            fi
+            highlight_words="$highlight_words$term"
         fi
     done
     
@@ -178,6 +186,29 @@ supergrep() {
         fi
     fi
 
-    # Execute the dynamically built command
-    eval "$grep_cmd $file_filter \"\$pattern\" ."
+    # 4. Execute the dynamically built command
+    # If listing files, outputting to a pipe/file, or no words to highlight, run normally
+    if [ -n "$list_only" ] || [ ! -t 1 ] || [ -z "$highlight_words" ]; then
+        eval "$grep_cmd --color=auto $file_filter \"\$pattern\" ."
+    else
+        # If outputting to terminal, use a robust perl script to highlight ONLY 
+        # the targeted keywords within the file content (ignoring file paths and line numbers).
+        export HIGHLIGHT_WORDS="$highlight_words"
+        export PERL_FLAGS="$perl_flags"
+        eval "GREP_COLORS='mt=' $grep_cmd --color=always $file_filter \"\$pattern\" ." | perl -pe '
+            my $hw = $ENV{HIGHLIGHT_WORDS};
+            my $flags = $ENV{PERL_FLAGS};
+            # Match the grep header: {file}:{line}: or {file}-{line}-
+            if ( s/^((?:.*?\e\[36m\e\[K[:\-]\e\[m\e\[K){2})// ) {
+                my $header = $1;
+                my $content = $_;
+                if ($flags eq "gi") {
+                    $content =~ s/($hw)/\e[01;31m$1\e[m/gi;
+                } else {
+                    $content =~ s/($hw)/\e[01;31m$1\e[m/g;
+                }
+                $_ = $header . $content;
+            }
+        '
+    fi
 }
