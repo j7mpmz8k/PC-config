@@ -68,43 +68,66 @@ bind '"\e[1;3C": end-of-line'
 
 supergrep() {
     local include_hidden=false
+    local case_insensitive="(?i)" # Case-insensitive by default
 
-    # Check for the optional -v flag as the first argument
-    if [ "$1" = "-v" ]; then
-        include_hidden=true
-        shift # Remove the -v flag from the arguments
-    fi
+    # 1. Parse optional flags before the main arguments
+    while [[ $1 == -* && ! $1 =~ ^-[0-9]+$ ]]; do
+        case "$1" in
+            -a|--all) # Search all files (including hidden)
+                include_hidden=true
+                shift
+                ;;
+            -c|--case-sensitive) # Make the search case-sensitive
+                case_insensitive=""
+                shift
+                ;;
+            *)
+                echo "Unknown option: $1"
+                return 1
+                ;;
+        esac
+    done
 
     # Check if the user provided at least a number and one word
     if [ "$#" -lt 2 ]; then
-        echo "Usage: supergrep [-v] <lines> <word1> [word2 ...]"
+        echo "Usage: supergrep [-a] [-c] <lines> <word1> [-exclude_word2] ..."
         echo ""
         echo "Options:"
-        echo "  -v        : Search all files, including hidden ones (starting with a dot)."
+        echo "  -a, --all         : Search all files, including hidden ones."
+        echo "  -c, --case-sensitive: Perform a case-sensitive search (case-insensitive by default)."
         echo ""
         echo "Parameters:"
-        echo "  <lines>   : The number of context lines to show before and after the match (e.g., 5)."
-        echo "              Use 0 to only show the exact matching lines."
-        echo "  <words>   : One or more keywords that MUST all exist on the same line."
+        echo "  <lines>           : Context lines to show (e.g., 5 or 0)."
+        echo "  <words>           : Words to include. Prefix a word with '-' to EXCLUDE it."
         echo ""
         echo "Examples:"
-        echo "  supergrep 5 tag util"
-        echo "  supergrep -v 0 error database connection"
+        echo "  supergrep 2 error database       # Find 'error' AND 'database' (case-insensitive)"
+        echo "  supergrep 0 error -database      # Find 'error' BUT NOT 'database'"
+        echo "  supergrep -c 0 Error             # Exact case match for 'Error'"
         return 1
     fi
 
-    # Save the first argument as the number of context lines
     local lines="$1"
-    shift # Remove the first argument, leaving only the words in $@
+    shift 
 
-    # Build the regex pattern dynamically
-    local pattern="^"
-    for word in "$@"; do
-        pattern="${pattern}(?=.*${word})"
+    # 2. Build the regex pattern
+    local pattern="^${case_insensitive}"
+    
+    # 3. Process the remaining words (Search Engine Style)
+    for term in "$@"; do
+        if [[ "$term" == -* ]]; then
+            # If the term starts with a hyphen, it's an EXCLUSION
+            local ex_word="${term:1}" # Strip the hyphen
+            pattern="${pattern}(?!.*${ex_word})"
+        else
+            # Otherwise, it's an INCLUSION
+            pattern="${pattern}(?=.*${term})"
+        fi
     done
+    
     pattern="${pattern}.*$"
 
-    # Run the grep command based on the include_hidden flag
+    # 4. Run the search
     if [ "$include_hidden" = true ]; then
         grep -C "$lines" -r -P "$pattern" .
     else
