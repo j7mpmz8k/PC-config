@@ -69,6 +69,9 @@ bind '"\e[1;3C": end-of-line'
 supergrep() {
     local include_hidden=false
     local case_insensitive="(?i)" # Case-insensitive by default
+    local list_only=""
+    local file_filter=""
+    local has_ext_filter=false
 
     # 1. Parse optional flags before the main arguments
     while [[ $1 == -* && ! $1 =~ ^-[0-9]+$ ]]; do
@@ -81,6 +84,18 @@ supergrep() {
                 case_insensitive=""
                 shift
                 ;;
+            -l|--list) # List files only
+                list_only="-l"
+                shift
+                ;;
+            -e|--ext) # Filter by extension
+                has_ext_filter=true
+                IFS=',' read -ra EXTS <<< "$2"
+                for ext in "${EXTS[@]}"; do
+                    file_filter="$file_filter --include=*.$ext"
+                done
+                shift 2
+                ;;
             *)
                 echo "Unknown option: $1"
                 return 1
@@ -90,11 +105,13 @@ supergrep() {
 
     # Check if the user provided at least a number and one word
     if [ "$#" -lt 2 ]; then
-        echo "Usage: supergrep [-a] [-c] <lines> <word1> [-exclude_word2] [+ word3] ..."
+        echo "Usage: supergrep [-a] [-c] [-l] [-e ext1,ext2] <lines> <word1> [-exclude_word2] [+ word3] ..."
         echo ""
         echo "Options:"
         echo "  -a, --all         : Search all files, including hidden ones."
         echo "  -c, --case-sensitive: Perform a case-sensitive search (case-insensitive by default)."
+        echo "  -l, --list        : Only list the names of files containing matches."
+        echo "  -e, --ext <exts>  : Filter by file extension, comma-separated (e.g., py,md)."
         echo ""
         echo "Parameters:"
         echo "  <lines>           : Context lines to show (e.g., 5 or 0)."
@@ -103,10 +120,10 @@ supergrep() {
         echo "  +                 : Use '+' to create an OR group."
         echo ""
         echo "Examples:"
-        echo "  supergrep 2 error database       # Find 'error' AND 'database'"
-        echo "  supergrep 0 error -database      # Find 'error' BUT NOT 'database'"
-        echo "  supergrep 0 cherry + fig         # Find 'cherry' OR 'fig'"
-        echo "  supergrep 0 error + warn alert   # Find 'error' OR ('warn' AND 'alert')"
+        echo "  supergrep -l 0 error database            # List files with 'error' AND 'database'"
+        echo "  supergrep -e py,js 2 error -database     # Search .py/.js for 'error' BUT NOT 'database'"
+        echo "  supergrep 0 cherry + fig                 # Find 'cherry' OR 'fig'"
+        echo "  supergrep 0 error + warn alert           # Find 'error' OR ('warn' AND 'alert')"
         return 1
     fi
 
@@ -147,10 +164,20 @@ supergrep() {
     # Wrap it all in a non-capturing group anchored to the start of the line
     local pattern="^${case_insensitive}(?:${joined_groups})$"
 
-    # 3. Run the search
-    if [ "$include_hidden" = true ]; then
-        grep -n -C "$lines" -r -P "$pattern" .
-    else
-        grep --exclude-dir=".[!.]*" --exclude-dir="..?*" --exclude=".[!.]*" --exclude="..?*" -n -C "$lines" -r -P "$pattern" .
+    # 3. Build and run the search command
+    local grep_cmd="grep -n $list_only -C \"$lines\" -r -P"
+    
+    if [ "$include_hidden" = false ]; then
+        # Always exclude hidden directories
+        grep_cmd="$grep_cmd --exclude-dir=\".[!.]*\" --exclude-dir=\"..?*\""
+        
+        # Only exclude hidden files if no explicit --include filter is provided
+        # (Using both --exclude and --include on files causes grep to ignore --include)
+        if [ "$has_ext_filter" = false ]; then
+            grep_cmd="$grep_cmd --exclude=\".[!.]*\" --exclude=\"..?*\""
+        fi
     fi
+
+    # Execute the dynamically built command
+    eval "$grep_cmd $file_filter \"\$pattern\" ."
 }
