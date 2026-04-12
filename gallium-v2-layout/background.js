@@ -68,11 +68,6 @@ chrome.input.ime.onKeyEvent.addListener(function(engineID, keyData) {
     return false;
   }
 
-  // For Ctrl/Alt shortcuts, let the system handle it (forces QWERTY physical positions)
-  if (keyData.ctrlKey || keyData.altKey) {
-    return false;
-  }
-
   let isShifted = keyData.shiftKey;
   if (keyData.capsLock && keyData.code.startsWith("Key")) {
      isShifted = !isShifted;
@@ -99,7 +94,9 @@ chrome.input.ime.onKeyEvent.addListener(function(engineID, keyData) {
         "key": mappedChar,
         "code": targetCode,
         "shiftKey": keyData.shiftKey,
-        "capsLock": keyData.capsLock
+        "capsLock": keyData.capsLock,
+        "ctrlKey": keyData.ctrlKey,
+        "altKey": keyData.altKey
       }]
     });
     return true; // We handled it, swallow the physical QWERTY key
