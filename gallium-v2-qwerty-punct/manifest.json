@@ -1,0 +1,28 @@
+{
+  "name": "Gallium v2 (QWERTY Punctuation)",
+  "version": "1.0",
+  "manifest_version": 3,
+  "description": "Gallium v2 with standard QWERTY punctuation keys, except ';' is on the P key.",
+  "permissions": ["input"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "input_components": [
+    {
+      "name": "Gallium v2 QWERTY Punct (Standard / Rowstag)",
+      "type": "ime",
+      "id": "gallium_v2_qwerty_punct_rowstag",
+      "description": "Gallium v2 (QWERTY Punct) for standard keyboards",
+      "language": "en-US",
+      "layouts": ["us"]
+    },
+    {
+      "name": "Gallium v2 QWERTY Punct (Ergo / Colstag)",
+      "type": "ime",
+      "id": "gallium_v2_qwerty_punct_colstag",
+      "description": "Gallium v2 (QWERTY Punct) for ergonomic keyboards",
+      "language": "en-US",
+      "layouts": ["us"]
+    }
+  ]
+}
