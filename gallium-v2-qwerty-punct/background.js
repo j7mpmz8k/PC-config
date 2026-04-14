@@ -24,7 +24,7 @@ const rowstagBase = {
   "KeyY": "j", "KeyU": "f", "KeyI": "o", "KeyO": "u", "KeyP": ";",
   "KeyA": "n", "KeyS": "r", "KeyD": "t", "KeyF": "s", "KeyG": "g",
   "KeyH": "y", "KeyJ": "h", "KeyK": "a", "KeyL": "e", "Semicolon": "i",
-  "KeyZ": "x", "KeyX": "q", "KeyC": "m", "KeyV": "w", "KeyB": "z",
+  "KeyZ": "q", "KeyX": "m", "KeyC": "w", "KeyV": "z", "KeyB": "x",
   "KeyN": "k", "KeyM": "p"
 };
 
@@ -33,19 +33,19 @@ const rowstagShift = {
   "KeyY": "J", "KeyU": "F", "KeyI": "O", "KeyO": "U", "KeyP": ":",
   "KeyA": "N", "KeyS": "R", "KeyD": "T", "KeyF": "S", "KeyG": "G",
   "KeyH": "Y", "KeyJ": "H", "KeyK": "A", "KeyL": "E", "Semicolon": "I",
-  "KeyZ": "X", "KeyX": "Q", "KeyC": "M", "KeyV": "W", "KeyB": "Z",
+  "KeyZ": "Q", "KeyX": "M", "KeyC": "W", "KeyV": "Z", "KeyB": "X",
   "KeyN": "K", "KeyM": "P"
 };
 
 // Colstag (Ergo) Mappings
 const colstagBase = {
   ...rowstagBase,
-  "KeyZ": "q", "KeyX": "x"
+  "KeyZ": "q", "KeyX": "x", "KeyC": "m", "KeyV": "w", "KeyB": "z"
 };
 
 const colstagShift = {
   ...rowstagShift,
-  "KeyZ": "Q", "KeyX": "X"
+  "KeyZ": "Q", "KeyX": "X", "KeyC": "M", "KeyV": "W", "KeyB": "Z"
 };
 
 // Helper function to get the physical KeyCode for the mapped character

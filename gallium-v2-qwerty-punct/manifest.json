@@ -1,26 +1,26 @@
 {
-  "name": "Gallium v2 (QWERTY Punctuation)",
+  "name": "Gallium v2 (Punct Mod)",
   "version": "1.0",
   "manifest_version": 3,
-  "description": "Gallium v2 with standard QWERTY punctuation keys, except ';' is on the P key.",
+  "description": "Gallium v2 with punctuation matching the Colemak modification (Includes Angle Mod for standard laptops).",
   "permissions": ["input"],
   "background": {
     "service_worker": "background.js"
   },
   "input_components": [
     {
-      "name": "Gallium v2 QWERTY Punct (Standard / Rowstag)",
+      "name": "Gallium v2 Punct Mod (Standard / Rowstag)",
       "type": "ime",
       "id": "gallium_v2_qwerty_punct_rowstag",
-      "description": "Gallium v2 (QWERTY Punct) for standard keyboards",
+      "description": "Gallium v2 (Punct Mod) for standard keyboards",
       "language": "en-US",
       "layouts": ["us"]
     },
     {
-      "name": "Gallium v2 QWERTY Punct (Ergo / Colstag)",
+      "name": "Gallium v2 Punct Mod (Ergo / Colstag)",
       "type": "ime",
       "id": "gallium_v2_qwerty_punct_colstag",
-      "description": "Gallium v2 (QWERTY Punct) for ergonomic keyboards",
+      "description": "Gallium v2 (Punct Mod) for ergonomic keyboards",
       "language": "en-US",
       "layouts": ["us"]
     }
