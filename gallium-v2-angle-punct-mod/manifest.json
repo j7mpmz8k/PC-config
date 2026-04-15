@@ -1,0 +1,24 @@
+{
+  "name": "Gallium v2 (Angle Mod, Punct Mod)",
+  "version": "1.0",
+  "manifest_version": 3,
+  "description": "Gallium v2 with Angle Mod and Colemak-style Punctuation Mod.",
+  "permissions": [
+    "input"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "input_components": [
+    {
+      "name": "Gallium v2 (Angle Mod, Punct Mod)",
+      "type": "ime",
+      "id": "gallium_v2_qwerty_punct_rowstag",
+      "description": "Gallium v2 (Angle Mod, Punct Mod) for standard keyboards",
+      "language": "en-US",
+      "layouts": [
+        "us"
+      ]
+    }
+  ]
+}

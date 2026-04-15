@@ -20,33 +20,70 @@ function consumeExpectedEvent(code, type) {
 
 // Rowstag (Standard) Mappings
 const rowstagBase = {
-  "KeyQ": "b", "KeyW": "l", "KeyE": "d", "KeyR": "c", "KeyT": "v",
-  "KeyY": "j", "KeyU": "f", "KeyI": "o", "KeyO": "u", "KeyP": ";",
-  "KeyA": "n", "KeyS": "r", "KeyD": "t", "KeyF": "s", "KeyG": "g",
-  "KeyH": "y", "KeyJ": "h", "KeyK": "a", "KeyL": "e", "Semicolon": "i",
-  "KeyZ": "q", "KeyX": "m", "KeyC": "w", "KeyV": "z", "KeyB": "x",
-  "KeyN": "k", "KeyM": "p"
+  "KeyQ": "b",
+  "KeyW": "l",
+  "KeyE": "d",
+  "KeyR": "c",
+  "KeyT": "v",
+  "KeyY": "j",
+  "KeyU": "f",
+  "KeyI": "o",
+  "KeyO": "u",
+  "KeyA": "n",
+  "KeyS": "r",
+  "KeyD": "t",
+  "KeyF": "s",
+  "KeyG": "g",
+  "KeyH": "y",
+  "KeyJ": "h",
+  "KeyK": "a",
+  "KeyL": "e",
+  "Semicolon": "i",
+  "KeyN": "k",
+  "KeyM": "p",
+  "KeyP": ",",
+  "Comma": "'",
+  "Period": ";",
+  "Slash": ".",
+  "KeyZ": "x",
+  "KeyX": "q",
+  "KeyC": "m",
+  "KeyV": "w",
+  "KeyB": "z"
 };
-
 const rowstagShift = {
-  "KeyQ": "B", "KeyW": "L", "KeyE": "D", "KeyR": "C", "KeyT": "V",
-  "KeyY": "J", "KeyU": "F", "KeyI": "O", "KeyO": "U", "KeyP": ":",
-  "KeyA": "N", "KeyS": "R", "KeyD": "T", "KeyF": "S", "KeyG": "G",
-  "KeyH": "Y", "KeyJ": "H", "KeyK": "A", "KeyL": "E", "Semicolon": "I",
-  "KeyZ": "Q", "KeyX": "M", "KeyC": "W", "KeyV": "Z", "KeyB": "X",
-  "KeyN": "K", "KeyM": "P"
+  "KeyQ": "B",
+  "KeyW": "L",
+  "KeyE": "D",
+  "KeyR": "C",
+  "KeyT": "V",
+  "KeyY": "J",
+  "KeyU": "F",
+  "KeyI": "O",
+  "KeyO": "U",
+  "KeyA": "N",
+  "KeyS": "R",
+  "KeyD": "T",
+  "KeyF": "S",
+  "KeyG": "G",
+  "KeyH": "Y",
+  "KeyJ": "H",
+  "KeyK": "A",
+  "KeyL": "E",
+  "Semicolon": "I",
+  "KeyN": "K",
+  "KeyM": "P",
+  "KeyP": "<",
+  "Comma": "\"",
+  "Period": ":",
+  "Slash": ">",
+  "KeyZ": "X",
+  "KeyX": "Q",
+  "KeyC": "M",
+  "KeyV": "W",
+  "KeyB": "Z"
 };
 
-// Colstag (Ergo) Mappings
-const colstagBase = {
-  ...rowstagBase,
-  "KeyZ": "q", "KeyX": "x", "KeyC": "m", "KeyV": "w", "KeyB": "z"
-};
-
-const colstagShift = {
-  ...rowstagShift,
-  "KeyZ": "Q", "KeyX": "X", "KeyC": "M", "KeyV": "W", "KeyB": "Z"
-};
 
 // Helper function to get the physical KeyCode for the mapped character
 function getTargetCode(char) {
@@ -62,6 +99,7 @@ chrome.input.ime.onFocus.addListener(function(context) {
 
 chrome.input.ime.onKeyEvent.addListener(function(engineID, keyData) {
   if (context_id === -1) return false;
+  
 
   // If this is a fake event we just generated, let it pass through to the system!
   if (consumeExpectedEvent(keyData.code, keyData.type)) {
@@ -73,8 +111,8 @@ chrome.input.ime.onKeyEvent.addListener(function(engineID, keyData) {
      isShifted = !isShifted;
   }
 
-  let mapBase = engineID.includes("colstag") ? colstagBase : rowstagBase;
-  let mapShift = engineID.includes("colstag") ? colstagShift : rowstagShift;
+  let mapBase = rowstagBase;
+  let mapShift = rowstagShift;
   
   let targetMap = isShifted ? mapShift : mapBase;
   let mappedChar = targetMap[keyData.code];
