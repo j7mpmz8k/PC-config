@@ -69,32 +69,32 @@ pre:hover code[class*="language-"]::before {
 }
 
 /* Define your languages */
-pre code.language-python::before { content: "Python"; }
-pre code.language-js::before, pre code.language-javascript::before { content: "JavaScript"; }
-pre code.language-ts::before, pre code.language-typescript::before { content: "TypeScript"; }
-pre code.language-html::before { content: "HTML"; }
-pre code.language-css::before { content: "CSS"; }
-pre code.language-bash::before, pre code.language-sh::before, pre code.language-shell::before { content: "Bash"; }
-pre code.language-json::before { content: "JSON"; }
-pre code.language-md::before, pre code.language-markdown::before { content: "Markdown"; }
-pre code.language-java::before { content: "Java"; }
-pre code.language-c::before { content: "C"; }
-pre code.language-cpp::before, pre code.language-c\+\+::before { content: "C++"; }
-pre code.language-cs::before, pre code.language-csharp::before { content: "C#"; }
-pre code.language-go::before { content: "Go"; }
-pre code.language-rust::before, pre code.language-rs::before { content: "Rust"; }
-pre code.language-ruby::before, pre code.language-rb::before { content: "Ruby"; }
-pre code.language-php::before { content: "PHP"; }
-pre code.language-sql::before { content: "SQL"; }
-pre code.language-xml::before { content: "XML"; }
-pre code.language-yaml::before, pre code.language-yml::before { content: "YAML"; }
-pre code.language-swift::before { content: "Swift"; }
-pre code.language-kotlin::before, pre code.language-kt::before { content: "Kotlin"; }
-pre code.language-dart::before { content: "Dart"; }
-pre code.language-r::before { content: "R"; }
-pre code.language-scala::before { content: "Scala"; }
-pre code.language-perl::before, pre code.language-pl::before { content: "Perl"; }
-pre code.language-lua::before { content: "Lua"; }
-pre code.language-haskell::before, pre code.language-hs::before { content: "Haskell"; }
-pre code.language-docker::before, pre code.language-dockerfile::before { content: "Dockerfile"; }
-pre code.language-toml::before { content: "TOML"; }
+pre code.language-python::before { content: "Python" !important; }
+pre code.language-js::before, pre code.language-javascript::before { content: "JavaScript" !important; }
+pre code.language-ts::before, pre code.language-typescript::before { content: "TypeScript" !important; }
+pre code.language-html::before { content: "HTML" !important; }
+pre code.language-css::before { content: "CSS" !important; }
+pre code.language-bash::before, pre code.language-sh::before, pre code.language-shell::before { content: "Bash" !important; }
+pre code.language-json::before { content: "JSON" !important; }
+pre code.language-md::before, pre code.language-markdown::before { content: "Markdown" !important; }
+pre code.language-java::before { content: "Java" !important; }
+pre code.language-c::before { content: "C" !important; }
+pre code.language-cpp::before, pre code.language-c\+\+::before { content: "C++" !important; }
+pre code.language-cs::before, pre code.language-csharp::before { content: "C#" !important; }
+pre code.language-go::before { content: "Go" !important; }
+pre code.language-rust::before, pre code.language-rs::before { content: "Rust" !important; }
+pre code.language-ruby::before, pre code.language-rb::before { content: "Ruby" !important; }
+pre code.language-php::before { content: "PHP" !important; }
+pre code.language-sql::before { content: "SQL" !important; }
+pre code.language-xml::before { content: "XML" !important; }
+pre code.language-yaml::before, pre code.language-yml::before { content: "YAML" !important; }
+pre code.language-swift::before { content: "Swift" !important; }
+pre code.language-kotlin::before, pre code.language-kt::before { content: "Kotlin" !important; }
+pre code.language-dart::before { content: "Dart" !important; }
+pre code.language-r::before { content: "R" !important; }
+pre code.language-scala::before { content: "Scala" !important; }
+pre code.language-perl::before, pre code.language-pl::before { content: "Perl" !important; }
+pre code.language-lua::before { content: "Lua" !important; }
+pre code.language-haskell::before, pre code.language-hs::before { content: "Haskell" !important; }
+pre code.language-docker::before, pre code.language-dockerfile::before { content: "Dockerfile" !important; }
+pre code.language-toml::before { content: "TOML" !important; }
