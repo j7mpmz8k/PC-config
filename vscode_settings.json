@@ -48,8 +48,5 @@
     "window.customTitleBarVisibility": "windowed",//enter full screen mode to take effect
     //if want title bar to be always hidden ->  set style from "custom" to "native" and set visibility to "never"
     "editor.cursorStyle": "block",
-    "workbench.statusBar.visible": false,
-    "markdown.styles": [
-        "/home/crostini/Github/PC-config/markdown-styles.css"
-    ]
+    "workbench.statusBar.visible": false
 }
