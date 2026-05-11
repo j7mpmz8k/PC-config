@@ -58,9 +58,6 @@ cat <<-:
 :
 }
 
-# Launch VS Code via Flatpak
-alias code="flatpak run com.visualstudio.code"
-
 # Map Alt+Left to Start of Line (same as Ctrl+A)
 bind '"\e[1;3D": beginning-of-line'
 # Map Alt+Right to End of Line (same as Ctrl+E)

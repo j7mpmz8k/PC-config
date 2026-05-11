@@ -1,0 +1,61 @@
+/* =========================================
+   1. STICKY HEADERS
+   ========================================= */
+h1, h2, h3, h4, h5, h6 {
+    position: sticky;
+    top: 0;
+    /* Uses VS Code's native theme variables so it always matches your current theme */
+    background-color: var(--vscode-editor-background); 
+    padding: 10px 0;
+    z-index: 100;
+    /* Optional: adds a subtle line under the sticky header */
+    border-bottom: 1px solid var(--vscode-panel-border); 
+}
+
+/* =========================================
+   2. CODE BLOCK LANGUAGE LABELS
+   ========================================= */
+/* Styles the container for the label */
+pre code[class*="language-"]::before {
+    display: block;
+    text-align: right;
+    font-size: 0.8em;
+    font-family: var(--vscode-editor-font-family);
+    /* Uses the line number color from your theme so it looks native */
+    color: var(--vscode-editorLineNumber-foreground); 
+    margin-bottom: 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--vscode-editorGroup-border);
+    text-transform: uppercase;
+}
+
+/* Define your languages */
+pre code.language-python::before { content: "Python"; }
+pre code.language-js::before, pre code.language-javascript::before { content: "JavaScript"; }
+pre code.language-ts::before, pre code.language-typescript::before { content: "TypeScript"; }
+pre code.language-html::before { content: "HTML"; }
+pre code.language-css::before { content: "CSS"; }
+pre code.language-bash::before, pre code.language-sh::before, pre code.language-shell::before { content: "Bash"; }
+pre code.language-json::before { content: "JSON"; }
+pre code.language-md::before, pre code.language-markdown::before { content: "Markdown"; }
+pre code.language-java::before { content: "Java"; }
+pre code.language-c::before { content: "C"; }
+pre code.language-cpp::before, pre code.language-c\+\+::before { content: "C++"; }
+pre code.language-cs::before, pre code.language-csharp::before { content: "C#"; }
+pre code.language-go::before { content: "Go"; }
+pre code.language-rust::before, pre code.language-rs::before { content: "Rust"; }
+pre code.language-ruby::before, pre code.language-rb::before { content: "Ruby"; }
+pre code.language-php::before { content: "PHP"; }
+pre code.language-sql::before { content: "SQL"; }
+pre code.language-xml::before { content: "XML"; }
+pre code.language-yaml::before, pre code.language-yml::before { content: "YAML"; }
+pre code.language-swift::before { content: "Swift"; }
+pre code.language-kotlin::before, pre code.language-kt::before { content: "Kotlin"; }
+pre code.language-dart::before { content: "Dart"; }
+pre code.language-r::before { content: "R"; }
+pre code.language-scala::before { content: "Scala"; }
+pre code.language-perl::before, pre code.language-pl::before { content: "Perl"; }
+pre code.language-lua::before { content: "Lua"; }
+pre code.language-haskell::before, pre code.language-hs::before { content: "Haskell"; }
+pre code.language-docker::before, pre code.language-dockerfile::before { content: "Dockerfile"; }
+pre code.language-toml::before { content: "TOML"; }
