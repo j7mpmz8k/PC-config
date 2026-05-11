@@ -42,6 +42,10 @@ This document explains the setup, challenges, and solutions for achieving sticky
    - `H1`, `H2`, and `H3` all snap to `top: 0`.
    - `H4`, `H5`, and `H6` have tightly compacted pixel offsets (e.g., 32px, 60px) and staggered `z-index` values so they cleanly dock underneath the `H3` billboard without wasting screen real estate.
 
+4. **Collapsible Sticky Headers (`<summary>` tags)**
+   - *The Problem:* Placing `### header` inside a `<details><summary>` block breaks sticky behavior because the header gets trapped inside the small height of the `<summary>` parent. Additionally, the block-level `###` forces the expand arrow onto a separate line.
+   - *The Fix:* We used the modern CSS `:has()` selector to make the `<summary>` itself the sticky element if it contains a header (e.g., `summary:has(h3)`). We then set the nested header to `display: inline-block` and stripped its margins so it sits perfectly on the same line to the right of the default expand arrow.
+
 ---
 
 ## Installation Instructions
