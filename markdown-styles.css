@@ -1,6 +1,12 @@
 /* =========================================
    1. STICKY HEADERS
    ========================================= */
+/* Fix VS Code markdown body container that prevents position: sticky */
+html, body {
+    overflow: visible !important;
+    overflow-x: visible !important;
+}
+
 h1, h2, h3, h4, h5, h6 {
     position: sticky;
     top: 0;
@@ -18,7 +24,8 @@ h1, h2, h3, h4, h5, h6 {
 /* Styles the container for the label */
 pre code[class*="language-"]::before {
     display: block;
-    text-align: right;
+    text-align: left;
+    font-weight: bold;
     font-size: 0.8em;
     font-family: var(--vscode-editor-font-family);
     /* Uses the line number color from your theme so it looks native */
