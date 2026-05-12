@@ -55,6 +55,8 @@ pre {
     padding: 0 !important; /* Strip VS Code's large default padding */
     margin-top: 4px !important;
     margin-bottom: 4px !important;
+    overflow-y: hidden !important; /* Prevents vertical scroll capture and layout shifts */
+    overflow-x: auto !important;   /* Allows horizontal scroll for long lines */
 }
 
 pre code {
