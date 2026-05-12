@@ -52,24 +52,28 @@ summary h1, summary h2, summary h3, summary h4, summary h5, summary h6 {
    which normally hide this element to show the "Copy Code" button. */
 pre {
     position: relative !important;
+    padding: 0 !important; /* Strip VS Code's large default padding */
+    margin-top: 4px !important;
+    margin-bottom: 4px !important;
 }
 
 pre code {
     display: block !important;
-    padding-top: 1.8em !important; /* Creates dedicated space so the absolute label never overlaps the code */
+    /* 14px top padding reserves just enough space for the 0.65em label */
+    padding: 14px 12px 6px 12px !important; 
 }
 
 pre code[class*="language-"]::before,
 pre:hover code[class*="language-"]::before {
     position: absolute !important;
-    top: 8px !important;
-    left: 16px !important; /* Aligns with standard Markdown pre padding */
+    top: 2px !important;
+    left: 12px !important; 
     display: block !important;
-    opacity: 0.6 !important;
+    opacity: 0.75 !important; /* Increased for better contrast */
     visibility: visible !important;
     text-align: left !important;
     font-weight: bold !important;
-    font-size: 0.7em !important;
+    font-size: 0.6em !important; /* Squeezed text slightly more */
     line-height: 1 !important;
     font-family: var(--vscode-editor-font-family) !important;
     color: var(--vscode-editorLineNumber-foreground) !important; 
