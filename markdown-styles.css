@@ -50,22 +50,34 @@ summary h1, summary h2, summary h3, summary h4, summary h5, summary h6 {
 /* Styles the container for the label.
    We use !important heavily here to override VS Code's native hover behaviors,
    which normally hide this element to show the "Copy Code" button. */
+pre {
+    position: relative !important;
+}
+
+pre code {
+    display: block !important;
+    padding-top: 1.8em !important; /* Creates dedicated space so the absolute label never overlaps the code */
+}
+
 pre code[class*="language-"]::before,
 pre:hover code[class*="language-"]::before {
+    position: absolute !important;
+    top: 8px !important;
+    left: 16px !important; /* Aligns with standard Markdown pre padding */
     display: block !important;
-    opacity: 1 !important;
+    opacity: 0.6 !important;
     visibility: visible !important;
     text-align: left !important;
     font-weight: bold !important;
-    font-size: 0.8em !important;
+    font-size: 0.7em !important;
+    line-height: 1 !important;
     font-family: var(--vscode-editor-font-family) !important;
     color: var(--vscode-editorLineNumber-foreground) !important; 
-    margin-bottom: 8px !important;
-    padding-bottom: 5px !important;
-    border-bottom: 1px solid var(--vscode-editorGroup-border) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
     text-transform: uppercase !important;
     z-index: 50 !important;
-    position: relative !important;
 }
 
 /* Define your languages */
