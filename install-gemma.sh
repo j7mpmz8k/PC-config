@@ -1,8 +1,7 @@
 #!/bin/bash
-# Install Ollama and pull Gemma 4 (4B) on the hosting machine
+# Install Ollama and pull Gemma 4 (2B & 4B) on the hosting machine
 # (Supports Windows Git Bash, WSL, and native Linux)
 
-MODEL_NAME="gemma4:e4b"
 IS_WINDOWS=false
 IS_WSL=false
 
@@ -20,8 +19,10 @@ if ! command -v ollama &> /dev/null; then
         winget install Ollama.Ollama --silent --accept-source-agreements --accept-package-agreements
         echo "Configuring Ollama to listen on all interfaces (OLLAMA_HOST=0.0.0.0)..."
         setx OLLAMA_HOST "0.0.0.0"
+        # Temporarily add Ollama directory to path so this script can run it immediately
+        export PATH="$PATH:$HOME/AppData/Local/Programs/Ollama"
         echo "Starting Ollama..."
-        powershell.exe -Command "Start-Process ollama"
+        powershell.exe -Command "Start-Process '$HOME\AppData\Local\Programs\Ollama\ollama.exe'"
     else
         echo "Ollama not found. Installing Ollama (may prompt for your sudo password)..."
         curl -fsSL https://ollama.com/install.sh | sh
@@ -31,7 +32,9 @@ else
     if $IS_WINDOWS && [ -z "$OLLAMA_HOST" ]; then
         echo "Configuring OLLAMA_HOST=0.0.0.0 on Windows..."
         setx OLLAMA_HOST "0.0.0.0"
-        powershell.exe -Command "Stop-Process -Name ollama -ErrorAction SilentlyContinue; Start-Process ollama"
+        # Temporarily add Ollama directory to path
+        export PATH="$PATH:$HOME/AppData/Local/Programs/Ollama"
+        powershell.exe -Command "Stop-Process -Name ollama -ErrorAction SilentlyContinue; Start-Process '$HOME\AppData\Local\Programs\Ollama\ollama.exe'"
     fi
 fi
 
@@ -66,8 +69,9 @@ if ! $IS_WINDOWS; then
     fi
 fi
 
-echo "Pulling the Gemma 4 (4B) model..."
-ollama pull "$MODEL_NAME"
+echo "Pulling the Gemma 4 (2B and 4B) models..."
+ollama pull gemma4:e2b
+ollama pull gemma4:e4b
 
 echo "------------------------------------------------"
 echo "Ollama & Gemma 4 Setup Complete!"

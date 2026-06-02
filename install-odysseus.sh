@@ -56,6 +56,7 @@ if $IS_WSL; then
     if curl -s -o /dev/null -w "%{http_code}" http://host.docker.internal:11434/api/tags | grep -q "200"; then
         echo "Ollama detected on Windows host! Triggering Gemma 4 pull on Windows..."
         curl -X POST http://host.docker.internal:11434/api/pull -d '{"name": "gemma4:e2b", "stream": false}'
+        curl -X POST http://host.docker.internal:11434/api/pull -d '{"name": "gemma4:e4b", "stream": false}'
         OLLAMA_CONNECTED=true
     else
         echo "Windows Ollama is not running (or not set to OLLAMA_HOST=0.0.0.0)."
@@ -69,8 +70,10 @@ if ! $OLLAMA_CONNECTED; then
             winget install Ollama.Ollama --silent --accept-source-agreements --accept-package-agreements
             echo "Configuring Ollama to listen on all interfaces (OLLAMA_HOST=0.0.0.0)..."
             setx OLLAMA_HOST "0.0.0.0"
+            # Temporarily add Ollama directory to path so this script can run it immediately
+            export PATH="$PATH:$HOME/AppData/Local/Programs/Ollama"
             echo "Starting Ollama..."
-            powershell.exe -Command "Start-Process ollama"
+            powershell.exe -Command "Start-Process '$HOME\AppData\Local\Programs\Ollama\ollama.exe'"
         else
             echo "Ollama not found. Installing Ollama (may prompt for your sudo password)..."
             curl -fsSL https://ollama.com/install.sh | sh
@@ -80,7 +83,9 @@ if ! $OLLAMA_CONNECTED; then
         if $IS_WINDOWS && [ -z "$OLLAMA_HOST" ]; then
             echo "Configuring OLLAMA_HOST=0.0.0.0 on Windows..."
             setx OLLAMA_HOST "0.0.0.0"
-            powershell.exe -Command "Stop-Process -Name ollama -ErrorAction SilentlyContinue; Start-Process ollama"
+            # Temporarily add Ollama directory to path
+            export PATH="$PATH:$HOME/AppData/Local/Programs/Ollama"
+            powershell.exe -Command "Stop-Process -Name ollama -ErrorAction SilentlyContinue; Start-Process '$HOME\AppData\Local\Programs\Ollama\ollama.exe'"
         fi
     fi
 
@@ -100,8 +105,9 @@ if ! $OLLAMA_CONNECTED; then
         fi
     fi
 
-    echo "Pulling the Gemma 4 (2B) model (recommended for 8GB RAM)..."
+    echo "Pulling the Gemma 4 (2B and 4B) models..."
     ollama pull gemma4:e2b
+    ollama pull gemma4:e4b
 fi
 echo "------------------------------------------------"
 
