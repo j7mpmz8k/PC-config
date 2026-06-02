@@ -54,9 +54,7 @@ if $IS_WSL; then
     echo "WSL detected. Checking if Ollama is running on Windows host..."
     # Connect to the host's Ollama API port (11434)
     if curl -s -o /dev/null -w "%{http_code}" http://host.docker.internal:11434/api/tags | grep -q "200"; then
-        echo "Ollama detected on Windows host! Triggering Gemma 4 pull on Windows..."
-        curl -X POST http://host.docker.internal:11434/api/pull -d '{"name": "gemma4:e2b", "stream": false}'
-        curl -X POST http://host.docker.internal:11434/api/pull -d '{"name": "gemma4:e4b", "stream": false}'
+        echo "Ollama detected on Windows host!"
         OLLAMA_CONNECTED=true
     else
         echo "Windows Ollama is not running (or not set to OLLAMA_HOST=0.0.0.0)."
@@ -104,10 +102,6 @@ if ! $OLLAMA_CONNECTED; then
             fi
         fi
     fi
-
-    echo "Pulling the Gemma 4 (2B and 4B) models..."
-    ollama pull gemma4:e2b
-    ollama pull gemma4:e4b
 fi
 echo "------------------------------------------------"
 
