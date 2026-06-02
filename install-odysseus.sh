@@ -73,7 +73,7 @@ if ! $OLLAMA_CONNECTED; then
             # Temporarily add Ollama directory to path so this script can run it immediately
             export PATH="$PATH:$HOME/AppData/Local/Programs/Ollama"
             echo "Starting Ollama..."
-            powershell.exe -Command "Start-Process '$HOME\AppData\Local\Programs\Ollama\ollama.exe'"
+            powershell.exe -Command "[System.Environment]::SetEnvironmentVariable('OLLAMA_HOST', '0.0.0.0', 'Process'); Start-Process '$HOME\AppData\Local\Programs\Ollama\ollama.exe'"
         else
             echo "Ollama not found. Installing Ollama (may prompt for your sudo password)..."
             curl -fsSL https://ollama.com/install.sh | sh
@@ -85,7 +85,7 @@ if ! $OLLAMA_CONNECTED; then
             setx OLLAMA_HOST "0.0.0.0"
             # Temporarily add Ollama directory to path
             export PATH="$PATH:$HOME/AppData/Local/Programs/Ollama"
-            powershell.exe -Command "Stop-Process -Name ollama -ErrorAction SilentlyContinue; Start-Process '$HOME\AppData\Local\Programs\Ollama\ollama.exe'"
+            powershell.exe -Command "Stop-Process -Name ollama -ErrorAction SilentlyContinue; [System.Environment]::SetEnvironmentVariable('OLLAMA_HOST', '0.0.0.0', 'Process'); Start-Process '$HOME\AppData\Local\Programs\Ollama\ollama.exe'"
         fi
     fi
 
