@@ -76,13 +76,35 @@ ollama pull gemma4:e4b
 echo "------------------------------------------------"
 echo "Ollama & Gemma 4 Setup Complete!"
 echo "------------------------------------------------"
+# Dynamically calculate the local IP address
+HOST_IP=""
 if $IS_WINDOWS; then
-    echo "Find this machine's IP by running 'ipconfig' in Windows Command Prompt/PowerShell."
+    # Prioritize finding a 192.* IP on physical adapters, then fall back to other private/available IPs
+    HOST_IP=$(powershell.exe -Command "
+        \$ip = (Get-NetIPAddress -InterfaceAlias 'Wi-Fi*', 'Ethernet*' -AddressFamily IPv4 -ErrorAction SilentlyContinue | Where-Object { \$_.IPAddress -like '192.*' } | Select-Object -First 1).IPAddress;
+        if (-not \$ip) {
+            \$ip = (Get-NetIPAddress -InterfaceAlias 'Wi-Fi*', 'Ethernet*' -AddressFamily IPv4 -ErrorAction SilentlyContinue | Where-Object { \$_.IPAddress -like '10.*' -or \$_.IPAddress -like '172.*' } | Select-Object -First 1).IPAddress;
+        }
+        if (-not \$ip) {
+            \$ip = (Get-NetIPAddress -InterfaceAlias 'Wi-Fi*', 'Ethernet*' -AddressFamily IPv4 -ErrorAction SilentlyContinue | Select-Object -First 1).IPAddress;
+        }
+        if (-not \$ip) {
+            \$ip = (Get-NetIPAddress -AddressFamily IPv4 -ErrorAction SilentlyContinue | Where-Object { \$_.IPAddress -like '192.*' } | Select-Object -First 1).IPAddress;
+        }
+        if (-not \$ip) {
+            \$ip = (Get-NetIPAddress -AddressFamily IPv4 -ErrorAction SilentlyContinue | Select-Object -First 1).IPAddress;
+        }
+        \$ip
+    " | tr -d '\r\n ')
 elif $IS_WSL; then
-    echo "WSL IP address is shared with Windows host."
-    echo "You can connect using: http://localhost:11434"
+    HOST_IP="localhost"
 else
-    echo "Find this machine's IP by running 'hostname -I' or 'ip addr'."
+    # Use active routing destination to find the true local LAN IP interface
+    HOST_IP=$(ip route get 1.1.1.1 2>/dev/null | grep -o -E "src [0-9.]+" | awk '{print $2}')
+    # Fallback to private range matching if routing table lookup fails
+    [ -z "$HOST_IP" ] && HOST_IP=$(hostname -I | tr ' ' '\n' | grep -E -o "192\.168\.[0-9]+\.[0-9]+|10\.[0-9]+\.[0-9]+\.[0-9]+|172\.(1[6-9]|2[0-9]|3[0-1])\.[0-9]+\.[0-9]+" | head -n 1)
 fi
-echo "Then connect Odysseus to this machine using its IP address on port 11434"
+
+echo "Connect Odysseus to this machine using this exact URL in Settings -> Servers:"
+echo "http://${HOST_IP:-<THIS_MACHINE_IP>}:11434"
 echo "------------------------------------------------"
