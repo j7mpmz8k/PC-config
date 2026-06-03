@@ -124,12 +124,14 @@ if [ ! -f .env ]; then
 fi
 
 if [ ! -f docker-compose.override.yml ]; then
-    echo "Configuring home directory access in docker-compose.override.yml..."
+    echo "Configuring home directory access and host network access in docker-compose.override.yml..."
     cat <<EOF > docker-compose.override.yml
 services:
   odysseus:
     volumes:
       - \${HOME}:\${HOME}:z
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 EOF
 fi
 
