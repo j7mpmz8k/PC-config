@@ -1,6 +1,5 @@
 #!/bin/bash
 # Install and launch Odysseus AI Workspace using Docker
-# (Assumes Docker has already been installed using install-docker.sh)
 
 # 1. Validation Checks
 echo "Checking system prerequisites..."
@@ -15,30 +14,46 @@ fi
 
 if $IS_WINDOWS; then
     if ! command -v docker &> /dev/null; then
-        echo "Error: Docker is not installed. Please run install-docker.sh first." >&2
-        exit 1
+        echo "Docker Desktop not found. Installing via winget..."
+        if ! command -v winget &> /dev/null; then
+            echo "Error: winget is not available. Please install Docker Desktop manually." >&2
+            exit 1
+        fi
+        winget install Docker.DockerDesktop --silent --accept-source-agreements --accept-package-agreements
+        echo "Docker Desktop installed! Please restart your terminal after this script finishes."
     fi
     DOCKER_CMD="docker compose"
     echo "Prerequisites verified! Docker is running and accessible."
 else
     if ! command -v docker &> /dev/null; then
-        echo "Error: Docker is not installed. Please run install-docker.sh first." >&2
-        exit 1
+        echo "Docker not found. Installing Docker and dependencies..."
+        sudo apt update
+        sudo apt install -y docker.io docker-buildx docker-compose-v2
+        sudo usermod -aG docker $USER
     fi
 
     if ! docker compose version &> /dev/null; then
-        echo "Error: Docker Compose is not installed. Please run install-docker.sh first." >&2
-        exit 1
+        echo "Docker Compose not found. Installing..."
+        sudo apt update
+        sudo apt install -y docker-compose-v2
+    fi
+
+    if ! command -v sshd &> /dev/null; then
+        echo "SSH server not found. Installing openssh-server..."
+        sudo apt update
+        sudo apt install -y openssh-server
+        sudo systemctl enable --now ssh
     fi
 
     if docker info &> /dev/null; then
         DOCKER_CMD="docker compose"
     elif sg docker -c "docker info" &> /dev/null; then
         DOCKER_CMD="sg docker -c \"docker compose\""
+    elif command -v docker &> /dev/null; then
+        DOCKER_CMD="sg docker -c \"docker compose\""
     else
         echo "Error: Cannot connect to the Docker daemon." >&2
         echo "Verify that Docker is running and your user is in the 'docker' group." >&2
-        echo "You may need to run 'newgrp docker' or restart your session." >&2
         exit 1
     fi
     echo "Prerequisites verified! Docker is running and accessible."
@@ -161,3 +176,33 @@ echo "     * Username: $USER"
 echo "     * Auth Method: SSH Key (Generate key in Odysseus and copy its public key to ~/.ssh/authorized_keys on this host)"
 echo "   - Click 'Save' to add the server, then double check the connection by pressing 'Check' to ping the server."
 echo "------------------------------------------------"
+
+if ! $IS_WINDOWS; then
+    echo ""
+    read -p "Paste the SSH setup command from Odysseus to authorize it (optional, press Enter to skip): " USER_CMD
+    if [ -n "$USER_CMD" ]; then
+        PUB_KEY_REGEX="(ssh-ed25519[[:space:]][a-zA-Z0-9+/=]+([[:space:]]+[a-zA-Z0-9._@-]+)?)"
+        if [[ "$USER_CMD" =~ $PUB_KEY_REGEX ]]; then
+            PUB_KEY="${BASH_REMATCH[1]}"
+            mkdir -p "$HOME/.ssh"
+            chmod 700 "$HOME/.ssh"
+            touch "$HOME/.ssh/authorized_keys"
+            chmod 600 "$HOME/.ssh/authorized_keys"
+            if ! grep -qxF "$PUB_KEY" "$HOME/.ssh/authorized_keys"; then
+                echo "$PUB_KEY" >> "$HOME/.ssh/authorized_keys"
+                echo "Successfully installed SSH key directly to ~/.ssh/authorized_keys!"
+            else
+                echo "SSH key is already registered."
+            fi
+        else
+            FIXED_CMD=$(echo "$USER_CMD" | sed 's/host\.docker\.internal/localhost/g')
+            echo "Executing: $FIXED_CMD"
+            eval "$FIXED_CMD"
+        fi
+    fi
+
+    if ! groups | grep -q "\bdocker\b"; then
+        echo "Reloading terminal group permissions..."
+        exec sg docker "$SHELL"
+    fi
+fi
