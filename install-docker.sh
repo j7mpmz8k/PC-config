@@ -39,8 +39,15 @@ else
     sudo usermod -aG docker $USER
 
     echo ""
-    echo "SSH Server is now running. You can link Odysseus to this host."
-    read -p "Paste the SSH command from Odysseus (optional, press Enter to skip): " USER_CMD
+    echo "SSH Server is now running! To link Odysseus to this host:"
+    echo "  1. Open Odysseus at http://localhost:7000"
+    echo "  2. Go to Cookbook -> Settings -> Servers"
+    echo "  3. Click 'Add Server' and enter:"
+    echo "     - Host: $USER@host.docker.internal"
+    echo "     - Port: 22"
+    echo "  4. Click the 'SSH Key' button next to the server row to show the setup command."
+    echo ""
+    read -p "Paste the SSH command shown by Odysseus (optional, press Enter to skip): " USER_CMD
     if [ -n "$USER_CMD" ]; then
         # Try to extract the public key directly and write it locally
         PUB_KEY_REGEX="(ssh-ed25519[[:space:]][a-zA-Z0-9+/=]+([[:space:]]+[a-zA-Z0-9._@-]+)?)"
