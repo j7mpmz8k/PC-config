@@ -34,7 +34,9 @@ elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]];
 else
     echo "Linux detected (Pop!_OS / Ubuntu / WSL2)..."
     sudo apt update
-    sudo apt install -y docker.io docker-buildx docker-compose-v2
+    sudo apt install -y docker.io docker-buildx docker-compose-v2 openssh-server
+    sudo systemctl enable --now ssh
     sudo usermod -aG docker $USER
-    echo "Docker installed. Please run 'newgrp docker' or log out and back in to apply group changes."
+    echo "Docker and SSH server installed. Automatically reloading group permissions..."
+    exec sg docker "$SHELL"
 fi
