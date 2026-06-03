@@ -37,6 +37,33 @@ else
     sudo apt install -y docker.io docker-buildx docker-compose-v2 openssh-server
     sudo systemctl enable --now ssh
     sudo usermod -aG docker $USER
+
+    echo ""
+    echo "SSH Server is now running. You can link Odysseus to this host."
+    read -p "Paste the SSH command from Odysseus (optional, press Enter to skip): " USER_CMD
+    if [ -n "$USER_CMD" ]; then
+        # Try to extract the public key directly and write it locally
+        PUB_KEY_REGEX="(ssh-ed25519[[:space:]][a-zA-Z0-9+/=]+([[:space:]]+[a-zA-Z0-9._@-]+)?)"
+        if [[ "$USER_CMD" =~ $PUB_KEY_REGEX ]]; then
+            PUB_KEY="${BASH_REMATCH[1]}"
+            mkdir -p "$HOME/.ssh"
+            chmod 700 "$HOME/.ssh"
+            touch "$HOME/.ssh/authorized_keys"
+            chmod 600 "$HOME/.ssh/authorized_keys"
+            if ! grep -qxF "$PUB_KEY" "$HOME/.ssh/authorized_keys"; then
+                echo "$PUB_KEY" >> "$HOME/.ssh/authorized_keys"
+                echo "Successfully installed SSH key directly to ~/.ssh/authorized_keys!"
+            else
+                echo "SSH key is already registered."
+            fi
+        else
+            # Fallback: replace host.docker.internal with localhost and run
+            FIXED_CMD=$(echo "$USER_CMD" | sed 's/host\.docker\.internal/localhost/g')
+            echo "Executing: $FIXED_CMD"
+            eval "$FIXED_CMD"
+        fi
+    fi
+
     echo "Docker and SSH server installed. Automatically reloading group permissions..."
     exec sg docker "$SHELL"
 fi
