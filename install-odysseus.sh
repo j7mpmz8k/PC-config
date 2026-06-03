@@ -130,14 +130,14 @@ if command -v ollama &> /dev/null; then
     echo ""
 
     MODELS=(
-        "llama3.2:1b|Llama 3.2 (1B)|Tier 1: Light (1GB RAM)|6.5/10|Meta's fastest and most memory-efficient model for basic CPU tasks"
-        "qwen2.5:1.5b|Qwen 2.5 (1.5B)|Tier 1: Light (1.3GB RAM)|7.2/10|Excellent multi-lingual and coding assistant, very fast on CPUs"
-        "deepseek-coder:1.5b|DeepSeek Coder (1.5B)|Tier 1: Light (1.3GB RAM)|7.5/10|Top-performing coding assistant for its tiny size"
-        "gemma2:2b|Gemma 2 (2B)|Tier 2: Medium (1.8GB RAM)|7.8/10|Highly articulate, Google-optimized lightweight model"
-        "llama3.2|Llama 3.2 (3B)|Tier 2: Medium (2.5GB RAM)|8.0/10|Meta's best-in-class reasoning and conversation model for edge devices"
-        "deepseek-coder:6.7b|DeepSeek Coder (6.7B)|Tier 3: Heavy (5GB RAM/GPU)|8.5/10|Extremely powerful coding and scripting model"
-        "llama3.1|Llama 3.1 (8B)|Tier 3: Heavy (6GB RAM/GPU)|8.7/10|Meta's highly versatile and smart general-purpose standard model"
-        "gemma2|Gemma 2 (9B)|Tier 3: Heavy (7GB RAM/GPU)|8.8/10|Google's advanced mid-sized model, very smart but resource-heavy"
+        "llama3.2:1b|Llama 3.2 (1B)|Tier 1 (needs ~1.5GB VRAM or 2GB RAM)|6.5/10|Meta's fastest and most memory-efficient model for basic CPU tasks"
+        "qwen2.5:1.5b|Qwen 2.5 (1.5B)|Tier 1 (needs ~1.5GB VRAM or 2GB RAM)|7.2/10|Excellent multi-lingual and coding assistant, very fast on CPUs"
+        "deepseek-coder:1.5b|DeepSeek Coder (1.5B)|Tier 1 (needs ~1.5GB VRAM or 2GB RAM)|7.5/10|Top-performing coding assistant for its tiny size"
+        "gemma2:2b|Gemma 2 (2B)|Tier 2 (needs ~2.5GB VRAM or 4GB RAM)|7.8/10|Highly articulate, Google-optimized lightweight model"
+        "llama3.2|Llama 3.2 (3B)|Tier 2 (needs ~3.5GB VRAM or 4GB RAM)|8.0/10|Meta's best-in-class reasoning and conversation model for edge devices"
+        "deepseek-coder:6.7b|DeepSeek Coder (6.7B)|Tier 3 (needs ~5.5GB VRAM or 16GB RAM)|8.5/10|Extremely powerful coding and scripting model"
+        "llama3.1|Llama 3.1 (8B)|Tier 3 (needs ~6.0GB VRAM or 16GB RAM)|8.7/10|Meta's highly versatile and smart general-purpose standard model"
+        "gemma2|Gemma 2 (9B)|Tier 3 (needs ~7.0GB VRAM or 16GB RAM)|8.8/10|Google's advanced mid-sized model, very smart but resource-heavy"
     )
 
     SELECTED=()
