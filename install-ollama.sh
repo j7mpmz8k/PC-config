@@ -1,5 +1,5 @@
 #!/bin/bash
-# Install Ollama and pull Gemma 4 (2B & 4B) on the hosting machine
+# Install Ollama and pull AI models (Gemma 4, Llama 3.1, Qwen 2.5) on the hosting machine
 # (Supports Windows Git Bash, WSL, and native Linux)
 
 IS_WINDOWS=false
@@ -11,7 +11,7 @@ elif grep -qi microsoft /proc/version 2>/dev/null; then
     IS_WSL=true
 fi
 
-echo "Setting up local AI backend (Ollama & Gemma 4)..."
+echo "Setting up local AI backend (Ollama & AI Models)..."
 
 if ! command -v ollama &> /dev/null; then
     if $IS_WINDOWS; then
@@ -69,12 +69,14 @@ if ! $IS_WINDOWS; then
     fi
 fi
 
-echo "Pulling the Gemma 4 (2B and 4B) models..."
+echo "Pulling Ollama models (Gemma 4, Llama 3.1, and Qwen 2.5)..."
 ollama pull gemma4:e2b
 ollama pull gemma4:e4b
+ollama pull llama3.1
+ollama pull qwen2.5:7b
 
 echo "------------------------------------------------"
-echo "Ollama & Gemma 4 Setup Complete!"
+echo "Ollama & AI Models Setup Complete!"
 echo "------------------------------------------------"
 # Dynamically calculate the local IP address
 HOST_IP=""
