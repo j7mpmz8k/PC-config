@@ -1,5 +1,5 @@
 #!/bin/bash
-# Install Ollama and pull AI models (Gemma 4, Llama 3.1, Qwen 2.5) on the hosting machine
+# Install Ollama and pull AI models (Gemma 4, Qwen 2.5, Qwen 3.5) on the hosting machine
 # (Supports Windows Git Bash, WSL, and native Linux)
 
 IS_WINDOWS=false
@@ -19,22 +19,24 @@ if ! command -v ollama &> /dev/null; then
         winget install Ollama.Ollama --silent --accept-source-agreements --accept-package-agreements
         echo "Configuring Ollama to listen on all interfaces (OLLAMA_HOST=0.0.0.0)..."
         setx OLLAMA_HOST "0.0.0.0"
+        setx OLLAMA_KV_CACHE_TYPE "q8_0"
         # Temporarily add Ollama directory to path so this script can run it immediately
         export PATH="$PATH:$HOME/AppData/Local/Programs/Ollama"
         echo "Starting Ollama..."
-        powershell.exe -Command "[System.Environment]::SetEnvironmentVariable('OLLAMA_HOST', '0.0.0.0', 'Process'); Start-Process '$HOME\AppData\Local\Programs\Ollama\ollama.exe'"
+        powershell.exe -Command "[System.Environment]::SetEnvironmentVariable('OLLAMA_HOST', '0.0.0.0', 'Process'); [System.Environment]::SetEnvironmentVariable('OLLAMA_KV_CACHE_TYPE', 'q8_0', 'Process'); Start-Process '$HOME\AppData\Local\Programs\Ollama\ollama.exe'"
     else
         echo "Ollama not found. Installing Ollama (may prompt for your sudo password)..."
         curl -fsSL https://ollama.com/install.sh | sh
     fi
 else
     echo "Ollama is already installed."
-    if $IS_WINDOWS && [ -z "$OLLAMA_HOST" ]; then
-        echo "Configuring OLLAMA_HOST=0.0.0.0 on Windows..."
+    if $IS_WINDOWS; then
+        echo "Configuring OLLAMA_HOST=0.0.0.0 and OLLAMA_KV_CACHE_TYPE=q8_0 on Windows..."
         setx OLLAMA_HOST "0.0.0.0"
+        setx OLLAMA_KV_CACHE_TYPE "q8_0"
         # Temporarily add Ollama directory to path
         export PATH="$PATH:$HOME/AppData/Local/Programs/Ollama"
-        powershell.exe -Command "Stop-Process -Name ollama -ErrorAction SilentlyContinue; [System.Environment]::SetEnvironmentVariable('OLLAMA_HOST', '0.0.0.0', 'Process'); Start-Process '$HOME\AppData\Local\Programs\Ollama\ollama.exe'"
+        powershell.exe -Command "Stop-Process -Name ollama -ErrorAction SilentlyContinue; [System.Environment]::SetEnvironmentVariable('OLLAMA_HOST', '0.0.0.0', 'Process'); [System.Environment]::SetEnvironmentVariable('OLLAMA_KV_CACHE_TYPE', 'q8_0', 'Process'); Start-Process '$HOME\AppData\Local\Programs\Ollama\ollama.exe'"
     fi
 fi
 
@@ -44,15 +46,15 @@ if ! $IS_WINDOWS; then
         # WSL Path: start in background without systemd
         if ! pgrep -x "ollama" >/dev/null; then
             echo "Starting Ollama server in WSL background..."
-            OLLAMA_HOST=0.0.0.0 ollama serve >/dev/null 2>&1 &
+            OLLAMA_HOST=0.0.0.0 OLLAMA_KV_CACHE_TYPE=q8_0 ollama serve >/dev/null 2>&1 &
             sleep 3
         fi
     else
         # Native Linux Path: configure and restart systemd service
-        if [ -d /etc/systemd/system ] && [ ! -f /etc/systemd/system/ollama.service.d/override.conf ]; then
-            echo "Configuring Ollama to listen on all interfaces on Linux..."
+        if [ -d /etc/systemd/system ]; then
+            echo "Configuring Ollama systemd override (OLLAMA_HOST=0.0.0.0 and OLLAMA_KV_CACHE_TYPE=q8_0) on Linux..."
             sudo mkdir -p /etc/systemd/system/ollama.service.d
-            echo -e "[Service]\nEnvironment=\"OLLAMA_HOST=0.0.0.0\"" | sudo tee /etc/systemd/system/ollama.service.d/override.conf >/dev/null
+            echo -e "[Service]\nEnvironment=\"OLLAMA_HOST=0.0.0.0\"\nEnvironment=\"OLLAMA_KV_CACHE_TYPE=q8_0\"" | sudo tee /etc/systemd/system/ollama.service.d/override.conf >/dev/null
             sudo systemctl daemon-reload
         fi
 
@@ -62,18 +64,23 @@ if ! $IS_WINDOWS; then
         else
             if ! pgrep -x "ollama" >/dev/null; then
                 echo "Starting Ollama server in background..."
-                OLLAMA_HOST=0.0.0.0 ollama serve >/dev/null 2>&1 &
+                OLLAMA_HOST=0.0.0.0 OLLAMA_KV_CACHE_TYPE=q8_0 ollama serve >/dev/null 2>&1 &
                 sleep 3
             fi
         fi
     fi
 fi
 
-echo "Pulling Ollama models (Gemma 4, Llama 3.1, and Qwen 2.5)..."
-ollama pull gemma4:e2b
+echo "Pulling Ollama models (Gemma 4, Qwen 2.5, and Qwen 3.5)..."
 ollama pull gemma4:e4b
-ollama pull llama3.1
-ollama pull qwen2.5:7b
+ollama pull batiai/gemma4-e4b:q6
+ollama pull igorls/gemma-4-12B-it-qat-q4_0-unquantized-heretic
+ollama pull hf.co/unsloth/gemma-4-12B-it-qat-GGUF:UD-Q4_K_XL
+ollama pull qwen2.5:7b-instruct-q6_K
+ollama pull hf.co/mradermacher/Qwen3.5-9B-Uncensored-Safetensors-i1-GGUF:IQ4_XS
+ollama pull hf.co/mradermacher/Qwen3.5-9B-Uncensored-Safetensors-i1-GGUF:Q6_K
+
+ollama pull qwen3.5:9b-q4_K_M
 
 echo "------------------------------------------------"
 echo "Ollama & AI Models Setup Complete!"

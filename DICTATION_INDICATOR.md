@@ -102,59 +102,71 @@ def check_cookie_running():
     return os.path.exists('/tmp/nerd-dictation.cookie')
 
 def keyboard_listener_thread():
+    fds = {}  # fd -> path
+    last_scan_time = 0
+    
     while True:
-        # Dynamically search for physical keyboards
-        devices = set(glob.glob('/dev/input/by-id/*event-kbd') + glob.glob('/dev/input/by-path/*event-kbd'))
-        fds = {}
-        for path in devices:
+        current_time = time.time()
+        # Rescan for new keyboards every 5 seconds
+        if current_time - last_scan_time > 5.0:
+            last_scan_time = current_time
             try:
-                fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK)
-                fds[fd] = path
+                devices = set(glob.glob('/dev/input/by-id/*event-kbd') + glob.glob('/dev/input/by-path/*event-kbd'))
+                opened_paths = set(fds.values())
+                for path in devices:
+                    if path not in opened_paths:
+                        try:
+                            fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK)
+                            fds[fd] = path
+                        except Exception:
+                            pass
             except Exception:
                 pass
-                
+
         if not fds:
-            time.sleep(5)
+            time.sleep(1)
             continue
-            
+
         try:
-            while fds:
-                r, w, x = select.select(list(fds.keys()), [], [], 1.0)
-                for fd in r:
-                    try:
-                        # Linux input_event struct is 24 bytes on 64-bit systems
-                        data = os.read(fd, 24)
+            r, _, _ = select.select(list(fds.keys()), [], [], 1.0)
+            for fd in r:
+                try:
+                    while True:
+                        try:
+                            data = os.read(fd, 24)
+                        except BlockingIOError:
+                            break
+                        
+                        if not data:
+                            raise OSError("EOF")
+                            
                         if len(data) == 24:
                             sec, usec, ev_type, code, val = struct.unpack('qqHHi', data)
-                            if ev_type == 1: # EV_KEY
-                                if code in (28, 96) and val == 1: # Enter or Numpad Enter pressed
-                                    # Use is_dictation_running() (checks cookie + /proc) to
-                                    # avoid calling `nerd-dictation end` when nothing is running.
-                                    # `end` unconditionally touch()es the cookie file which
-                                    # would cause a false indicator flash.
+                            if ev_type == 1:  # EV_KEY
+                                if code in (28, 96) and val == 1:  # Enter or Numpad Enter pressed
                                     if is_dictation_running():
                                         subprocess.run(
                                             ['/home/johndoe/.local/bin/nerd-dictation', 'toggle'],
                                             stdout=subprocess.DEVNULL,
                                             stderr=subprocess.DEVNULL
                                         )
+                        else:
+                            break
+                except (OSError, Exception):
+                    try:
+                        os.close(fd)
                     except Exception:
-                        try:
-                            os.close(fd)
-                        except Exception:
-                            pass
-                        fds.pop(fd, None)
-                        break
+                        pass
+                    fds.pop(fd, None)
         except Exception:
-            pass
-            
-        # Clean up FDs on error/rebuild
-        for fd in list(fds.keys()):
-            try:
-                os.close(fd)
-            except Exception:
-                pass
-        time.sleep(1)
+            for fd in list(fds.keys()):
+                try:
+                    os.close(fd)
+                except Exception:
+                    pass
+            fds.clear()
+            time.sleep(1)
+
 
 def get_monitors():
     monitors = []
